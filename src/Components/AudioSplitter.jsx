@@ -1,54 +1,77 @@
 import React, { useState } from 'react';
-import * as essentia from 'essentia.js';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 
 const AudioSplitter = () => {
   const [file, setFile] = useState(null);
-  const [stems, setStems] = useState([]);
+  const [stems, setStems] = useState({});
   const navigate = useNavigate();
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const uploadedFile = event.target.files[0];
     setFile(uploadedFile);
 
     if (uploadedFile) {
-      const stem = new essentia.StemGenerator(uploadedFile.path);
-      const output = stem.generate();
-      setStems([...output]);
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+
+      try {
+        const response = await axios.post('http://localhost:5000/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        const outputPath = response.data.output;
+        setStems({
+          vocals: `${outputPath}/vocals.wav`,
+          drums: `${outputPath}/drums.wav`,
+          bass: `${outputPath}/bass.wav`,
+          other: `${outputPath}/other.wav`,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
-  const handleSaveFile = (fileData) => {
-    const fileContent = fileData.toString();
-    const downloadLink = window.URL.createObjectURL(new Blob([fileContent]));
+  const handleSaveFile = (fileUrl, fileName) => {
     const link = document.createElement('a');
-    link.href = downloadLink;
-    link.setAttribute('download', 'music');
+    link.href = fileUrl;
+    link.setAttribute('download', `${fileName}.wav`);
     document.body.appendChild(link);
     link.click();
   };
 
-  const renderStems = () => {
-    return stems.map((stem, index) => (
-      <div key={index}>
-        {stem.split('/')}
-        <input
-          type="text"
-          defaultValue={stem.default}
-          placeholder="New Stem Name"
-        />
-        <button onClick={() => handleSaveFile(stem)}>Save</button>
-      </div>
-    ));
-  };
-
   return (
     <div>
-          <button onClick={() => navigate('/')}>Back</button>
+      <button onClick={() => navigate('/')}>Back</button>
       <h2>Audio Splitter</h2>
       <input type="file" onChange={handleFileUpload} accept="audio/*" />
-      {renderStems()}
+      {stems.vocals && (
+        <div>
+          <h3>Vocals</h3>
+          <button onClick={() => handleSaveFile(stems.vocals, 'vocals')}>Download Vocals</button>
+        </div>
+      )}
+      {stems.drums && (
+        <div>
+          <h3>Drums</h3>
+          <button onClick={() => handleSaveFile(stems.drums, 'drums')}>Download Drums</button>
+        </div>
+      )}
+      {stems.bass && (
+        <div>
+          <h3>Bass</h3>
+          <button onClick={() => handleSaveFile(stems.bass, 'bass')}>Download Bass</button>
+        </div>
+      )}
+      {stems.other && (
+        <div>
+          <h3>Other</h3>
+          <button onClick={() => handleSaveFile(stems.other, 'other')}>Download Other</button>
+        </div>
+      )}
     </div>
   );
 };
