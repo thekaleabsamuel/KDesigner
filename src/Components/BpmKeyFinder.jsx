@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import * as BeatDetector from 'web-audio-beat-detector';
 import { Key } from 'tonal';
+import { useNavigate } from 'react-router-dom';
 
 const BpmKeyDetector = () => {
   const [file, setFile] = useState(null);
   const [bpm, setBpm] = useState(null);
   const [key, setKey] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -35,6 +37,7 @@ const BpmKeyDetector = () => {
 
   return (
     <div>
+      <button onClick={() => navigate('/')}>Back</button>
       <h2>BPM & Key Detector</h2>
       <input type="file" onChange={handleFileChange} accept="audio/*" />
       <button onClick={detectBpmAndKey} disabled={!file || isLoading}>
