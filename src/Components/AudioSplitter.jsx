@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import * as essentia from 'essentia.js';
+import { useNavigate } from 'react-router-dom';
+
 
 const AudioSplitter = () => {
   const [file, setFile] = useState(null);
   const [stems, setStems] = useState([]);
+  const navigate = useNavigate();
 
   const handleFileUpload = (event) => {
     const uploadedFile = event.target.files[0];
@@ -42,6 +45,7 @@ const AudioSplitter = () => {
 
   return (
     <div>
+          <button onClick={() => navigate('/')}>Back</button>
       <h2>Audio Splitter</h2>
       <input type="file" onChange={handleFileUpload} accept="audio/*" />
       {renderStems()}
