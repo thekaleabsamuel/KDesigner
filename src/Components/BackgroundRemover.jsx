@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import download from 'downloadjs';
+import { useNavigate } from 'react-router-dom';
+
 
 const BackgroundRemover = () => {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -51,6 +54,7 @@ const BackgroundRemover = () => {
 
   return (
     <div>
+      <button onClick={() => navigate('/')}>Back</button>
       <h2>Background Remover</h2>
       <input type="file" onChange={handleFileChange} />
       <button onClick={removeBackground} disabled={!file || isLoading}>
