@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const PaintCanvas = () => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [brushColor, setBrushColor] = useState('#000000');
   const [brushSize, setBrushSize] = useState(5);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,6 +48,7 @@ const PaintCanvas = () => {
 
   return (
     <div>
+     <button onClick={() => navigate('/')}>Back</button>
       <h2>Paint Canvas</h2>
       <canvas
         ref={canvasRef}
